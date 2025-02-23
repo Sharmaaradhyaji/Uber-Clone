@@ -1,5 +1,5 @@
-import http from 'http';  // Use import instead of require
-import app from './app.js';  // Ensure app is exported using `export default` in the app file
+import http from 'http';  
+import app from './app.js';  
 
 const port = process.env.PORT || 3000;
 
