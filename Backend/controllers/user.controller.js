@@ -2,8 +2,8 @@ import { validationResult } from "express-validator";
 import createUser from "../services/user.service.js"; // Service for user creation
 import { userModel } from "../models/user.model.js";
 
+// Register user
 const registerUser = async (req, res, next) => {
-  // Check for validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -24,7 +24,6 @@ const registerUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
-    // Respond with the token and user data (excluding the password)
     res.status(201).json({
       token,
       user: {
@@ -40,4 +39,35 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-export default registerUser;
+// Login user
+const loginUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = user.generateAuthToken();
+    res.status(200).json({ token, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export {
+  registerUser,
+  loginUser
+};

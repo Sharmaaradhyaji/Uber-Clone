@@ -1,16 +1,16 @@
-Backend/README.md
+# Backend API Documentation
 
-# User Registration API
+## User Registration API
 
-## Endpoint: `/users/register`
+### Endpoint: `/users/register`
 
-### Description
+#### Description
 This endpoint allows users to register by providing their first name, last name, email, and password. The endpoint validates the input data and creates a new user in the database.
 
-### Method
+#### Method
 `POST`
 
-### Request Body
+#### Request Body
 The request body should be a JSON object with the following fields:
 
 - `fullname.firstname`: (string) The first name of the user. Must be at least 3 characters long.
@@ -18,7 +18,7 @@ The request body should be a JSON object with the following fields:
 - `email`: (string) The email address of the user. Must be a valid email format.
 - `password`: (string) The password for the user. Must be at least 6 characters long.
 
-Example:
+#### Example Request
 ```json
 {
   "fullname": {
@@ -28,12 +28,16 @@ Example:
   "email": "john.doe@example.com",
   "password": "password123"
 }
+```
 
-Responses
-Success
-Status Code: 201 Created
+#### Responses
 
-Response Body:
+**Success Response**
+
+**Status Code:** `201 Created`
+
+**Response Body:**
+```json
 {
   "token": "jwt_token_here",
   "user": {
@@ -43,10 +47,14 @@ Response Body:
     "email": "john.doe@example.com"
   }
 }
+```
 
-Validation Errors
-Status Code: 400 Bad Request
-Response Body:
+**Validation Errors**
+
+**Status Code:** `400 Bad Request`
+
+**Response Body:**
+```json
 {
   "errors": [
     {
@@ -66,15 +74,21 @@ Response Body:
     }
   ]
 }
+```
 
-Server Error
-Status Code: 500 Internal Server Error
-Response Body:
+**Server Error**
+
+**Status Code:** `500 Internal Server Error`
+
+**Response Body:**
+```json
 {
   "message": "Server Error"
 }
+```
 
-Example request
+#### Example cURL Request
+```sh
 curl -X POST http://localhost:4000/users/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -85,3 +99,95 @@ curl -X POST http://localhost:4000/users/register \
         "email": "john.doe@example.com",
         "password": "password123"
       }'
+```
+
+---
+
+## User Login API
+
+### Endpoint: `/users/login`
+
+#### Description
+Authenticates a user with the provided email and password. The endpoint validates the input data, checks the credentials, and returns a JWT token for authentication along with the user details.
+
+#### Method
+`POST`
+
+#### Request Body
+
+| Field     | Type   | Description                  | Validation              |
+|-----------|--------|------------------------------|--------------------------|
+| `email`   | string | User's email address         | Must be a valid email format |
+| `password`| string | User's password              | Must be at least 6 characters |
+
+#### Example Request
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+#### Responses
+
+**Success Response**
+
+**Status Code:** `200 OK`
+
+**Response Body:**
+```json
+{
+  "token": "jwt_token_here",
+  "user": {
+    "id": "user_id_here",
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+**Error Responses**
+
+**Validation Error** (`400 Bad Request`)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    },
+    {
+      "msg": "Password must be at least 6 characters long",
+      "param": "password",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**Invalid Credentials** (`401 Unauthorized`)
+```json
+{
+  "message": "Invalid credentials"
+}
+```
+
+**Server Error** (`500 Internal Server Error`)
+```json
+{
+  "message": "Server Error"
+}
+```
+
+---
+
+## Implementation Details
+
+- Passwords are hashed using `bcrypt` before storing in the database.
+- JWT token is generated using the user's ID for authentication.
+- Input validation is performed using `express-validator`.
+- User data is stored in `MongoDB` using `mongoose`.
+
+---
