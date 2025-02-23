@@ -183,6 +183,80 @@ Authenticates a user with the provided email and password. The endpoint validate
 
 ---
 
+## User Profile API
+
+### Endpoint: `/users/profile`
+
+#### Description
+Fetches the profile of the authenticated user.
+
+#### Method
+`GET`
+
+#### Responses
+
+**Success Response**
+
+**Status Code:** `200 OK`
+
+**Response Body:**
+```json
+{
+  "id": "user_id_here",
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john.doe@example.com"
+}
+```
+
+**Unauthorized** (`401 Unauthorized`)
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**Server Error** (`500 Internal Server Error`)
+```json
+{
+  "message": "Server Error"
+}
+```
+
+---
+
+## User Logout API
+
+### Endpoint: `/users/logout`
+
+#### Description
+Logs out the authenticated user by clearing the authentication token.
+
+#### Method
+`GET`
+
+#### Responses
+
+**Success Response**
+
+**Status Code:** `200 OK`
+
+**Response Body:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Server Error** (`500 Internal Server Error`)
+```json
+{
+  "message": "Server Error"
+}
+```
+
+---
+
 ## Implementation Details
 
 - Passwords are hashed using `bcrypt` before storing in the database.
@@ -191,3 +265,4 @@ Authenticates a user with the provided email and password. The endpoint validate
 - User data is stored in `MongoDB` using `mongoose`.
 
 ---
+

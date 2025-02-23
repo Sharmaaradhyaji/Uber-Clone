@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './db/db.js';
 import router from './routes/user.routes.js';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables first
 dotenv.config();
@@ -17,7 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-
+app.use(cookieParser())
 // Set up the root route
 app.get('/', (req, res) => {
     res.send("Jai Shree Ganesh");
