@@ -183,36 +183,75 @@ Authenticates a user with the provided email and password. The endpoint validate
 
 ---
 
-## User Profile API
+## Captain Registration API
 
-### Endpoint: `/users/profile`
+### Endpoint: `/captains/register`
 
 #### Description
-Fetches the profile of the authenticated user.
+This endpoint allows captains to register by providing their full name, email, password, and vehicle details. The endpoint validates the input data and creates a new captain in the database.
 
 #### Method
-`GET`
+`POST`
+
+#### Request Body
+The request body should be a JSON object with the following fields:
+
+- `fullname`: (string) The full name of the captain. Must be at least 3 characters long.
+- `email`: (string) The email address of the captain. Must be a valid email format.
+- `password`: (string) The password for the captain. Must be at least 6 characters long.
+- `vehicle.color`: (string) The color of the vehicle. Must be between 3 and 20 characters long.
+- `vehicle.plate`: (string) The plate number of the vehicle. Must be between 3 and 20 characters long.
+- `vehicle.capacity`: (number) The capacity of the vehicle. Must be a number greater than or equal to 1.
+- `vehicle.vehicleType`: (string) The type of the vehicle. Must be either 'car', 'motorcycle', or 'auto'.
+
+#### Example Request
+```json
+{
+  "fullname": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
 
 #### Responses
 
 **Success Response**
 
-**Status Code:** `200 OK`
+**Status Code:** `201 Created`
 
 **Response Body:**
 ```json
 {
-  "id": "user_id_here",
-  "firstname": "John",
-  "lastname": "Doe",
-  "email": "john.doe@example.com"
+  "token": "jwt_token_here",
+  "captain": {
+    "id": "captain_id_here",
+    "fullname": "John Doe",
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
 }
 ```
 
-**Unauthorized** (`401 Unauthorized`)
+**Validation Errors** (`400 Bad Request`)
+
 ```json
 {
-  "message": "Unauthorized"
+  "errors": [
+    { "msg": "First name must be at least 3 characters long", "param": "fullname", "location": "body" },
+    { "msg": "Please enter a valid email address", "param": "email", "location": "body" },
+    { "msg": "Password must be between 6 and 20 characters", "param": "password", "location": "body" }
+  ]
 }
 ```
 
@@ -222,47 +261,4 @@ Fetches the profile of the authenticated user.
   "message": "Server Error"
 }
 ```
-
----
-
-## User Logout API
-
-### Endpoint: `/users/logout`
-
-#### Description
-Logs out the authenticated user by clearing the authentication token.
-
-#### Method
-`GET`
-
-#### Responses
-
-**Success Response**
-
-**Status Code:** `200 OK`
-
-**Response Body:**
-```json
-{
-  "message": "Logged out successfully"
-}
-```
-
-**Server Error** (`500 Internal Server Error`)
-```json
-{
-  "message": "Server Error"
-}
-```
-
----
-
-## Implementation Details
-
-- Passwords are hashed using `bcrypt` before storing in the database.
-- JWT token is generated using the user's ID for authentication.
-- Input validation is performed using `express-validator`.
-- User data is stored in `MongoDB` using `mongoose`.
-
----
 
