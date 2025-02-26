@@ -57,21 +57,9 @@ The request body should be a JSON object with the following fields:
 ```json
 {
   "errors": [
-    {
-      "msg": "Invalid Email",
-      "param": "email",
-      "location": "body"
-    },
-    {
-      "msg": "First name must be at least 3 characters long",
-      "param": "fullname.firstname",
-      "location": "body"
-    },
-    {
-      "msg": "Password must be at least 6 characters long",
-      "param": "password",
-      "location": "body"
-    }
+    { "msg": "Invalid Email", "param": "email", "location": "body" },
+    { "msg": "First name must be at least 3 characters long", "param": "fullname.firstname", "location": "body" },
+    { "msg": "Password must be at least 6 characters long", "param": "password", "location": "body" }
   ]
 }
 ```
@@ -153,16 +141,8 @@ Authenticates a user with the provided email and password. The endpoint validate
 ```json
 {
   "errors": [
-    {
-      "msg": "Invalid Email",
-      "param": "email",
-      "location": "body"
-    },
-    {
-      "msg": "Password must be at least 6 characters long",
-      "param": "password",
-      "location": "body"
-    }
+    { "msg": "Invalid Email", "param": "email", "location": "body" },
+    { "msg": "Password must be at least 6 characters long", "param": "password", "location": "body" }
   ]
 }
 ```
@@ -188,23 +168,12 @@ Authenticates a user with the provided email and password. The endpoint validate
 ### Endpoint: `/captains/register`
 
 #### Description
-This endpoint allows captains to register by providing their full name, email, password, and vehicle details. The endpoint validates the input data and creates a new captain in the database.
+This endpoint allows captains to register by providing their full name, email, password, and vehicle details.
 
 #### Method
 `POST`
 
 #### Request Body
-The request body should be a JSON object with the following fields:
-
-- `fullname`: (string) The full name of the captain. Must be at least 3 characters long.
-- `email`: (string) The email address of the captain. Must be a valid email format.
-- `password`: (string) The password for the captain. Must be at least 6 characters long.
-- `vehicle.color`: (string) The color of the vehicle. Must be between 3 and 20 characters long.
-- `vehicle.plate`: (string) The plate number of the vehicle. Must be between 3 and 20 characters long.
-- `vehicle.capacity`: (number) The capacity of the vehicle. Must be a number greater than or equal to 1.
-- `vehicle.vehicleType`: (string) The type of the vehicle. Must be either 'car', 'motorcycle', or 'auto'.
-
-#### Example Request
 ```json
 {
   "fullname": "John Doe",
@@ -244,13 +213,11 @@ The request body should be a JSON object with the following fields:
 ```
 
 **Validation Errors** (`400 Bad Request`)
-
 ```json
 {
   "errors": [
     { "msg": "First name must be at least 3 characters long", "param": "fullname", "location": "body" },
-    { "msg": "Please enter a valid email address", "param": "email", "location": "body" },
-    { "msg": "Password must be between 6 and 20 characters", "param": "password", "location": "body" }
+    { "msg": "Please enter a valid email address", "param": "email", "location": "body" }
   ]
 }
 ```
@@ -261,4 +228,59 @@ The request body should be a JSON object with the following fields:
   "message": "Server Error"
 }
 ```
+
+---
+
+## Captain Profile API
+
+### Endpoint: `/captains/profile`
+
+#### Description
+Fetches the profile of the authenticated captain.
+
+#### Method
+`GET`
+
+#### Responses
+
+**Success Response**
+
+**Status Code:** `200 OK`
+
+**Response Body:**
+```json
+{
+  "id": "captain_id_here",
+  "fullname": "John Doe",
+  "email": "john.doe@example.com",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+**Unauthorized** (`401 Unauthorized`)
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**Server Error** (`500 Internal Server Error`)
+```json
+{
+  "message": "Server Error"
+}
+```
+
+---
+
+## Implementation Details
+- Passwords are hashed using bcrypt.
+- JWT token is generated using the captain's ID for authentication.
+- Input validation is performed using express-validator.
+- Captain data is stored in MongoDB using mongoose.
 

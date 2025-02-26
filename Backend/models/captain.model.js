@@ -4,16 +4,22 @@ import jwt from "jsonwebtoken";
 
 const captainSchema = new mongoose.Schema({
   fullname: {
-    type: String,
-    required: true,
-    minlength: [3, "First name must be at least 3 characters long"],
+    firstname: {
+      type: String,
+      required: true,
+      minlength: [3, "First name must be at least 3 characters long"],
+    },
+    lastname: {
+      type: String,
+      required: true,
+      minlength: [3, "Last name must be at least 3 characters long"],
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
     lowercase: true,
-    match: [/\S+@\S+\.\S+/, "Please enter a valid email address"],
   },
   password: {
     type: String,
@@ -62,8 +68,9 @@ const captainSchema = new mongoose.Schema({
 
 captainSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: "1d",
   });
+  return token;
 };
 
 captainSchema.methods.comparePassword = async function (password) {
