@@ -1,17 +1,20 @@
 import { validationResult } from "express-validator";
-import createUser from "../services/user.service.js"; // Service for user creation
+import {createUser} from "../services/user.service.js"; 
 import { userModel } from "../models/user.model.js";
 import { authUser } from "../middlewares/auth.middleware.js";
 import { blackListTokenModel } from "../models/blackListToken.model.js";
 
-// Register user
 const registerUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { fullname, email, password } = req.body;
+  const { email, fullname, password } = req.body;
+
+  if(!email || email.trim() === ""){
+    return res.status(400).json({ message: "Email is required "})
+  }
 
   const isUserAlreadyExist = await userModel.findOne({
     email,
@@ -24,11 +27,10 @@ const registerUser = async (req, res, next) => {
   try {
     const hashedPassword = await userModel.hashPassword(password);
 
-    // Create the user by passing the hashed password
     const user = await createUser({
+      email,
       firstname: fullname.firstname,
       lastname: fullname.lastname,
-      email,
       password: hashedPassword,
     });
 
@@ -36,12 +38,7 @@ const registerUser = async (req, res, next) => {
 
     res.status(201).json({
       token,
-      user: {
-        id: user._id,
-        firstname: user.fullname.firstname,
-        lastname: user.fullname.lastname,
-        email: user.email,
-      },
+      user
     });
   } catch (error) {
     console.error(error);

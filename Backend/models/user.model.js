@@ -1,9 +1,15 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: [5, "Email must be at least 5 characters long"],
+    },
     fullname: {
       firstname: {
         type: String,
@@ -12,19 +18,13 @@ const userSchema = new mongoose.Schema(
       },
       lastname: {
         type: String,
-        required: true,
         minlength: [3, "Last name must be at least 3 characters long"],
       },
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      minlength: [5, "Email must be at least 5 characters long"],
     },
     password: {
       type: String,
       required: true,
+      select: false,
     },
     socketId: {
       type: String,
@@ -33,9 +33,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.pre("save", function (next) {
+  if (!this.email) {
+    next(new Error("Email is required"));
+  } else {
+    next();
+  }
+});
+
 // Instance method for generating a JWT token
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {expiresIn: '1d'});
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
   return token;
 };
 

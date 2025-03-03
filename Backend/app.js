@@ -5,6 +5,8 @@ import connectDB from './db/db.js';
 import router from './routes/user.routes.js';
 import cookieParser from 'cookie-parser';
 import captainRoutes from './routes/captain.routes.js';
+import mapRouter from './routes/maps.routes.js';
+import rideRouter from './routes/ride.routes.js';
 
 // Load environment variables first
 dotenv.config();
@@ -28,5 +30,7 @@ app.get('/', (req, res) => {
 
 app.use('/users', router)
 app.use('/captains', captainRoutes)
+app.use('/maps', mapRouter)
+app.use('/rides', rideRouter)
 // Export the app (using ES module export)
 export default app;
